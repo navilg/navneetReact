@@ -20,5 +20,7 @@ fi
 
 chmod 744 $HOME/bin/navneetReact/navneetReact
 
-echo "Completed. Use navneetReact command in the working directory to run the program."
+echo "Completed."
+echo
+echo "Use navneetReact command in the working directory to run the program."
 sleep 2
