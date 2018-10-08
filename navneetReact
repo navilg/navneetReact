@@ -1,0 +1,303 @@
+#!/bin/bash
+
+mkdir -p $HOME/bin >> /dev/null 2>&1
+rm $HOME/bin/monitor_nR.out >> /dev/null 2>&1
+touch $HOME/bin/monitor_nR.out
+logfile="$HOME/bin/monitor_nR.out"
+
+
+######################### EXIT CODE #####################################################
+clear_code()
+{
+	clear
+	
+	echo
+	echo " 		   **************************************** "
+	echo -e "\033[34m 			███╗   ██╗ █████╗ ██╗   ██╗██╗ \033[m"
+	echo -e "\033[34m			████╗  ██║██╔══██╗██║   ██║██║ \033[m"
+	echo -e "\033[34m 			██╔██╗ ██║███████║██║   ██║██║ \033[m"
+	echo -e "\033[34m 			██║╚██╗██║██╔══██║╚██╗ ██╔╝██║ \033[m"
+	echo -e "\033[34m 			██║ ╚████║██║  ██║ ╚████╔╝ ██║ \033[m"
+	echo -e "\033[34m 			╚═╝  ╚═══╝╚═╝  ╚═╝  ╚═══╝  ╚═╝ \033[m"
+	echo -e "		   *******\033[31m Run to find your own race \033[m*******"
+	echo
+	echo
+}
+###########################################################################################
+
+######################### EXIT CODE #####################################################
+
+exit_code()
+{
+	echo -e "Exiting Script"
+	exit
+}
+
+##################################################################################
+
+############################ Testing Internet connectivity ######################
+
+connectivity()
+{
+	echo
+	echo -e "** Starting initialisation process"
+	echo
+	echo -e "You can also find the monitor output here: $logfile"
+	echo -e "Testing internet connectivity..."
+	ping -c 1 google.com >> /dev/null 2>&1
+	if [ $? == 0 ]
+	then
+		ping -c 1 yahoo.com >> /dev/null 2>&1
+		if  [ $? == 0 ]
+		then
+			echo -e "Internet connectivity available"
+		else
+			echo -e "Interenet connectivity seems to be not available. Press CTRL + C to stop or wait to continue."
+			sleep 7
+		fi
+	else
+		echo -e "Interenet connectivity seems to be not available. Press CTRL + C to stop or wait to continue."
+		sleep 7
+	fi
+}
+
+############################# 1. Checking requirements #############################
+
+requirements()
+{
+	echo -e "\n Checking required packages..."
+	
+	echo -e "npm package"
+	hash npm >> /dev/null 2>&1
+	if [ $? != 0 ]
+	then
+		echo "npm package is not installed."
+		read -p "Do you want to install it ? (Y/N): " ans
+		if [ $ans == 'y' -o $ans == 'Y' ]
+		then
+			echo "Downloading as superuser."
+			sudo apt install npm
+			if [ $? != 0 ]
+			then
+				clear_code
+				echo "Installation failed. Please install npm manually and try again"
+				exit_code
+			fi
+			clear_code
+			echo "npm Installation successful"
+		else
+			clear_code
+			echo "Please install npm manually and try again"
+			exit_code
+		fi
+	fi
+	
+	echo -e "nodejs package"	
+	hash nodejs >> /dev/null 2>&1
+	if [ $? != 0 ]
+	then
+		echo "nodejs package is not installed."
+		read -p "Do you want to install it ? (Y/N): " ans
+		if [ $ans == 'y' -o $ans == 'Y' ]
+		then
+			echo "Downloading as superuser."
+			sudo apt install nodejs
+			if [ $? != 0 ]
+			then
+				clear_code
+				echo "Installation failed. Please install nodejs manually and try again"
+				exit_code
+			fi
+			clear_code
+			echo "nodejs Installation successful"
+		else
+			clear_code
+			echo "Please install nodejs manually and try again"
+			exit_code
+		fi
+	fi
+	
+	echo -e "node package"
+	hash node >> /dev/null 2>&1
+	if [ $? != 0 ]
+	then
+		echo "node package is not installed."
+		read -p "Do you want to install it ? (Y/N): " ans
+		if [ $ans == 'y' -o $ans == 'Y' ]
+		then
+			echo "Downloading as superuser."
+			sudo apt install nodejs-legacy
+			if [ $? != 0 ]
+			then
+				clear_code
+				echo "Installation failed. Please install node manually and try again"
+				exit_code
+			fi
+			clear_code
+			echo "node Installation successful"
+		else
+			clear_code
+			echo "Please install node manually and try again"
+			exit_code
+		fi
+	fi
+	
+	echo -e "git package"
+	hash git >> /dev/null 2>&1
+	if [ $? != 0 ]
+	then
+		echo "git package is not installed."
+		read -p "Do you want to install it ? (Y/N): " ans
+		if [ $ans == 'y' -o $ans == 'Y' ]
+		then
+			echo "Downloading as superuser."
+			sudo apt install git
+			if [ $? != 0 ]
+			then
+				clear_code
+				echo "Installation failed. Please install node manually and try again"
+				exit_code
+			fi
+			clear_code
+			echo "git Installation successful"
+		else
+			clear_code
+			echo "Please install git manually and try again"
+			exit_code
+		fi
+	fi
+	
+	echo
+	echo "Looks good !!!"
+	echo
+}
+
+#############################################################################################		
+
+############################## npm commands #########################################
+initiate()
+{
+	echo "Current directory : $PWD"
+	echo
+	echo -e "running npm init"
+	echo
+	npm init
+	echo
+	if [ $? != 0 ]
+	then
+		echo -e "npm init Failed. Try again"
+		exit_code
+	fi
+
+	echo -e "\033[34m Installing react & react-dom dependencies \033[m"
+	echo
+	npm install react react-dom --save
+	echo
+	if [ $? != 0 ]
+	then
+		echo -e "installation Failed. Try again"
+		exit_code
+	fi
+	
+	echo -e "\033[34m Installing @material-ui/core & @material-ui/icons dependencies \033[m"
+	echo
+	npm install @material-ui/core @material-ui/icons --save
+	echo
+	if [ $? != 0 ]
+	then
+		echo -e "installation Failed. Try again"
+		exit_code
+	fi
+
+
+	echo -e "\033[34m Installing @babel/cli @babel/core @babel/preset-env & @babel/preset-react dev-dependencies \033[m"
+	echo
+	npm install @babel/cli @babel/core @babel/preset-env @babel/preset-react --save-dev
+	echo
+	if [ $? != 0 ]
+	then
+		echo -e "installation Failed. Try again"
+		exit_code
+	fi
+	
+	echo -e "\033[34m Installing webpack webpack-cli webpack-dev-server babel-loader sass-loader style-loader & css-loader dev-dependencies \033[m"
+	echo
+	npm install webpack webpack-cli webpack-dev-server babel-loader sass-loader style-loader css-loader --save-dev
+	echo
+	if [ $? != 0 ]
+	then
+		echo -e "installation Failed. Try again"
+		exit_code
+	fi
+	
+	echo -e "\033[34m Installing node-sass html-loader & file-loader dev-dependencies \033[m"
+	echo
+	npm install node-sass html-loader file-loader --save-dev
+	echo
+	if [ $? != 0 ]
+	then
+		echo -e "installation Failed. Try again"
+		exit_code
+	fi
+	echo
+	echo -e "Checking installed packages..."
+	sleep 3
+	read -p "Press any key and enter to proceed " ans
+	unset ans
+	clear_code
+	echo -e "npm packages installed:"
+	echo -e "Dependencies: react, react-dom, @material-ui/core & @material-ui/icons"
+	echo -e "Dev Dependencies: @babel/cli, @babel/core, @babel/preset-env, @babel/preset-react, webpack, webpack-cli, webpack-dev-server"
+	echo -e "babel-loader, sass-loader, style-loader, css-loader, node-sass, html-loader & file-loader" 	
+
+}
+
+create_files_folders()
+{
+
+echo
+echo
+echo "Creating required files and directories"
+echo
+echo "Current directory: $PWD"
+echo
+mkdir src
+echo -e "Cloning webpack.config.js file.. \n"
+git clone https://github.com/navneetlal/react-webpack-boiler-plate.git >> /dev/null 2>&1
+mv react-webpack-boiler-plate/webpack.config.js .
+rm -rf react-webpack-boiler-plate
+touch webpack.config.js
+echo -e "webpack.config.js file cloned. \n"
+cd src
+echo "Current directory: $PWD"
+mkdir components
+mkdir styles
+touch app.js
+cd styles
+echo "Current directory: $PWD"
+touch styles.scss
+mkdir components
+mkdir base
+cd base
+echo "Current directory: $PWD"
+touch setting.scss
+touch base.scss
+cd ../../..
+echo "Current directory: $PWD"
+echo
+echo -e "\033[34m listing files and directories \033[m"
+echo
+find * |grep -v node_modules
+echo
+}
+
+################## Main ##########################
+
+clear_code|tee -a $logfile
+connectivity|tee -a $logfile
+requirements|tee -a $logfile
+initiate|tee -a $logfile
+create_files_folders|tee -a $logfile
+
+			
+			
